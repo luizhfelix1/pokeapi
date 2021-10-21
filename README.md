@@ -1,2 +1,2 @@
-# estudos_php
-PHP studies.
+# PokeApi
+Pokemon API.
