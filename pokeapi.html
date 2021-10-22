@@ -15,16 +15,14 @@
 	<link href="https://use.fontawesome.com/releases/v5.12.0/css/all.css" rel="stylesheet">
 </head>
 
-<body>
-<div class="bg-image" 
-    style="background-image: url('pixel-pokemon-wallpaper.png');
-           height: 100vh">
+<body  style="background-image: url('pixel-pokemon-wallpaper.png');">
+
 
     <div class="container-fluid">
         <div class="row">
             <form class="text-center" id="theForm">
-                <input class="form-input" type="text" name="nome" id="nome" style="width: 40%; margin: 25px auto; background-color: rgba(245,245,245, 0.4);"/>
-                <button type="submit" style="background-color: rgba(245,245,245, 0.4);">
+                <input type="text" name="nome" id="nome" style="width: 40%; margin: 25px auto; background-color: rgba(245,245,245, 0.4);"/>
+                <button class="btn btn-success" type="submit" style="background-color: rgba(245,245,245, 0.4);">
                     Enviar!
                 </button>
             </form>
@@ -75,14 +73,14 @@
     </div>
     </div>
     <div class="text-center">
-        <pre style="width: 40%; margin:0 auto; margin-top: 25px; padding: 0; margin-bottom: 10px; background-color: rgba(245,245,245, 0.4);">
+        <pre style="width: 40%; margin:0 auto; margin-top: 25px; padding: 0; margin-bottom: 1px; background-color: rgba(245,245,245, 0.4);">
             <h2 class="text-center">Informações</h2> 
         </pre>
     </div>
     <div class="text-center">
         
         <div class="text-left">
-            <pre style="width: 40%; margin:0 auto; margin-top: 25px; padding: 0; margin-bottom: 50px; background-color: rgba(245,245,245, 0.4);">
+            <pre style="width: 40%; margin:0 auto; margin-top: 10px; padding: 0; margin-bottom: 50px; background-color: rgba(245,245,245, 0.4);">
                 <h4>Nome: <span id="name" style="color: green;"></span></span></h4>
                 <h4>Peso: <span id="peso" style="color: green;"></span></h4>
                 <h4>Tipo: <span id="tipo" style="color: green;"></span></span></h4>
@@ -90,36 +88,9 @@
             </pre>
         </div>
     </div>
-    <script>
-        $("#theForm").submit(function(e) {
-            e.preventDefault();
-
-            var name=document.getElementById('nome').value;
-            $.ajax({
-                type: 'GET',
-                url: 'https://pokeapi.co/api/v2/pokemon/'+name,
-                success: function(ret){
-                    //ret = JSON.parse(ret);
-                    //var peso = (ret.weight / 2.2) * ret.weight; 
-
-
-                    console.log(ret);
-                    document.getElementById('name').innerHTML=ret.name;
-                    document.getElementById('imagem').src=ret.sprites.front_default;
-                    document.getElementById('imagem2').src=ret.sprites.back_default;
-                    document.getElementById('imagem3').src=ret.sprites.front_shiny;
-                    document.getElementById('peso').innerHTML=ret.weight+" lbs";
-                    document.getElementById('tipo').innerHTML=ret.types[0].type.name;
-                    document.getElementById('held_items').innerHTML=ret.held_items[0].item.name;
-                    
-                }
-            });
-        });
-    </script>
+    <script src="script.js"></script>
 
 
      
-</div>
-
 </body>
 </html>
