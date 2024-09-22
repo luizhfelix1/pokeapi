@@ -4,6 +4,10 @@
     <title>Pokédex Modernizada</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="assets/gameboy.png" type="image/png">
+
     <!-- Bootstrap CSS (versão 4) -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Fontes do Google - Poppins -->
@@ -24,7 +28,6 @@
             --input-text-color: #000;
             --stat-bar-color: #4CAF50;
             --input-placeholder-color: #999;
-            --badge-text-color: #fff;
             --primary-color: #3B4CCA; /* Cor principal para melhorias */
             --secondary-color: #FFCC00; /* Cor secundária */
             --tab-active-color: #fff;
@@ -42,6 +45,7 @@
             margin: 0;
             padding: 0;
             color: var(--text-color);
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
         .dark-theme {
             --background-color: #1a1a1a;
@@ -68,6 +72,11 @@
             color: var(--container-text-color);
             box-shadow: 0 4px 8px var(--card-shadow);
             transition: background-color 0.5s ease, box-shadow 0.3s ease;
+        }
+        .logo {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 20px;
         }
         .screen {
             background-color: var(--screen-background);
@@ -234,9 +243,10 @@
             text-align: center;
             padding: 10px;
             margin-top: 10px;
+            flex-direction: column; /* Alinhamento vertical */
         }
         .creator-text {
-            margin-left: 10px;
+            margin-top: 10px;
         }
         .creator a {
             color: var(--text-color);
@@ -257,23 +267,20 @@
             object-fit: cover; /* Ajustar a imagem dentro do contêiner */
         }
         /* Estilo para o botão de tema */
-        .theme-switcher {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-        }
-        .theme-switcher button {
-            background-color: transparent;
-            border: none;
-            color: var(--text-color);
-            font-size: 20px; /* Reduzido para 20px */
+        .theme-toggle {
+            margin-top: 10px;
+            padding: 8px 16px;
+            font-size: 18px;
             cursor: pointer;
-            transition: color 0.3s ease;
+            border: none;
+            border-radius: 20px;
+            background-color: #f0f0f0;
+            transition: background-color 0.3s, transform 0.3s;
         }
-        .theme-switcher button:hover {
-            color: var(--secondary-color);
+        .theme-toggle:hover {
+            background-color: #e0e0e0;
         }
-        /* Estilo personalizado para as Nav Pills */
+        /* Estilos para as Nav Pills */
         .nav-pills .nav-link {
             border-radius: 50px;
             padding: 8px 16px; /* Reduzido o padding */
@@ -324,13 +331,6 @@
 </head>
 <body>
 
-    <!-- Botão para alternar entre temas -->
-    <div class="theme-switcher">
-        <button id="themeToggle" aria-label="Alternar Tema">
-            <i class="fas fa-moon"></i>
-        </button>
-    </div>
-
     <!-- Texto do Criador fora da div principal, sobre o fundo -->
     <div class="creator">
         <!-- Imagem do criador -->
@@ -341,10 +341,15 @@
                     <i class="fab fa-github github-icon"></i>
                 </a>
             </p>
+            <!-- Botão para alternar entre temas, centralizado abaixo do criador -->
+            <button id="themeToggle" aria-label="Alternar Tema" class="theme-toggle">🌙</button>
         </div>
     </div>
 
     <div class="pokedex-container" id="pokedexContainer">
+
+        <!-- Logo Pokéball Centralizado -->
+        <img src="assets/pokeball.png" alt="Pokéball Logo" class="logo mx-auto d-block">
 
         <!-- Nav Pills -->
         <ul class="nav nav-pills mb-3" id="pokedexTab" role="tablist">
@@ -482,15 +487,25 @@
             $('#pokedexTab a[href="#search"]').tab('show');
         }
 
-        // Função para alternar o tema
+        // Função para alternar o tema com persistência usando localStorage
         const themeToggle = document.getElementById('themeToggle');
+
+        // Verifica o tema salvo no localStorage e aplica
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-theme');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+
         themeToggle.addEventListener('click', () => {
             document.body.classList.toggle('dark-theme');
-            // Trocar o ícone do botão
+
+            // Atualiza o ícone do botão e salva a preferência
             if (document.body.classList.contains('dark-theme')) {
                 themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                localStorage.setItem('theme', 'dark');
             } else {
                 themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                localStorage.setItem('theme', 'light');
             }
         });
 
