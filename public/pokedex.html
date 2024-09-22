@@ -33,7 +33,6 @@
             --card-shadow: rgba(0, 0, 0, 0.1);
             --hover-shadow: rgba(0, 0, 0, 0.2);
             --stat-color: #ffcb05; /* Cor para as barras de estatísticas */
-            --stat-icon-color: var(--primary-color); /* Inicializado com a cor principal */
             --stat-font-size: 0.9em; /* Tamanho reduzido das fontes */
             --stat-padding: 8px; /* Padding reduzido */
         }
@@ -499,7 +498,7 @@
         function registerSearch(pokemonName) {
             $.ajax({
                 type: 'POST',
-                url: 'http://localhost:3000/search',
+                url: '/api/search', // Atualizado para a função serverless
                 data: JSON.stringify({ pokemon_name: pokemonName.toLowerCase() }),
                 contentType: 'application/json',
                 success: function() {
@@ -517,7 +516,7 @@
         function fetchTop10() {
             $.ajax({
                 type: 'GET',
-                url: 'http://localhost:3000/top10',
+                url: '/api/top10', // Atualizado para a função serverless
                 success: function(data) {
                     // Limpar a lista atual
                     $('#top10-list').empty();
