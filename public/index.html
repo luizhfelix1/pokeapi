@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <title>Pokédex Modernizada</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS (versão 4) -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Fontes do Google - Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <!-- Estilos personalizados -->
+    <style>
+        :root {
+            --background-color: #F0F8FF; /* Branco Gelo */
+            --text-color: #333; /* Texto mais escuro para contraste */
+            --container-background: #f2f2f2;
+            --container-text-color: #000;
+            --screen-background: #9fd3c7;
+            --button-background: #ffcc00;
+            --button-text-color: #333;
+            --input-background: #fff;
+            --input-text-color: #000;
+            --stat-bar-color: #4CAF50;
+            --input-placeholder-color: #999;
+            --badge-text-color: #fff;
+            --primary-color: #3B4CCA; /* Cor principal para melhorias */
+            --secondary-color: #FFCC00; /* Cor secundária */
+            --tab-active-color: #fff;
+            --tab-inactive-color: #ccc;
+            --tab-hover-color: #ddd;
+            --card-shadow: rgba(0, 0, 0, 0.1);
+            --hover-shadow: rgba(0, 0, 0, 0.2);
+            --stat-color: #ffcb05; /* Cor para as barras de estatísticas */
+            --stat-font-size: 0.9em; /* Tamanho reduzido das fontes */
+            --stat-padding: 8px; /* Padding reduzido */
+        }
+        body {
+            background-color: var(--background-color);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+        }
+        .dark-theme {
+            --background-color: #1a1a1a;
+            --text-color: #f2f2f2;
+            --container-background: #333;
+            --container-text-color: #fff;
+            --screen-background: #555;
+            --button-background: #666;
+            --button-text-color: #fff;
+            --input-background: #222;
+            --input-text-color: #fff;
+            --stat-bar-color: #ffcc00;
+            --input-placeholder-color: #bbb;
+            --badge-text-color: #333;
+            --stat-color: #ffa500; /* Alteração de cor para o modo escuro */
+        }
+        .pokedex-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background-color: var(--container-background);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            color: var(--container-text-color);
+            box-shadow: 0 4px 8px var(--card-shadow);
+            transition: background-color 0.5s ease, box-shadow 0.3s ease;
+        }
+        .screen {
+            background-color: var(--screen-background);
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 300px;
+            box-shadow: inset 0 0 10px var(--card-shadow);
+        }
+        .pokemon-image {
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+        }
+        .info {
+            margin-top: 20px;
+            background-color: var(--container-background);
+            padding: 15px;
+            border-radius: 10px;
+            color: var(--container-text-color);
+        }
+        .info h4 {
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 1em; /* Reduzido para 1em */
+        }
+        .btn-search {
+            background-color: var(--button-background);
+            border: none;
+            color: var(--button-text-color);
+            transition: background-color 0.3s ease;
+        }
+        .btn-search:hover {
+            background-color: #e6b800; /* Ajuste de cor para hover */
+        }
+        .form-control {
+            background-color: var(--input-background);
+            color: var(--input-text-color);
+            border: 1px solid #ccc;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-size: 0.9em; /* Reduzido para 0.9em */
+            padding: 8px; /* Padding reduzido */
+        }
+        .form-control::placeholder {
+            color: var(--input-placeholder-color);
+        }
+        .input-group {
+            max-width: 100%;
+        }
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-color: #333;
+            border-radius: 50%;
+            padding: 10px;
+        }
+        /* Estilos para as badges de tipos */
+        .type-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 12px;
+            color: var(--badge-text-color);
+            font-weight: bold;
+            margin-right: 5px;
+            text-transform: capitalize;
+            margin-bottom: 5px;
+            font-size: 0.8em; /* Reduzido para 0.8em */
+        }
+        /* Estilos para os links de evolução */
+        .evolution-link {
+            cursor: pointer;
+            color: var(--primary-color);
+            text-decoration: none;
+            margin-right: 5px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            font-size: 0.9em; /* Reduzido para 0.9em */
+        }
+        .evolution-link:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+        /* Estilos para a única div de estatísticas */
+        .stats-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        .stat-item {
+            flex: 0 0 48%; /* Duas estatísticas por linha */
+            background-color: var(--container-background);
+            border-radius: 10px;
+            padding: var(--stat-padding);
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px var(--card-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        .stat-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px var(--hover-shadow);
+        }
+        .stat-icon {
+            font-size: 1.2em; /* Reduzido para 1.2em */
+            margin-right: 8px;
+            /* A cor agora é definida inline via JavaScript */
+        }
+        .stat-details {
+            flex: 1;
+        }
+        .stat-name {
+            font-weight: 600;
+            font-size: 0.9em; /* Reduzido para 0.9em */
+            text-transform: capitalize;
+        }
+        .stat-value {
+            font-size: 1em; /* Reduzido para 1em */
+            color: var(--stat-color);
+            font-weight: bold;
+        }
+        .progress {
+            height: 6px; /* Altura reduzida */
+            border-radius: 3px;
+            margin-top: 5px;
+        }
+        .progress-bar {
+            transition: width 1s ease-in-out;
+        }
+        /* Estilo para o indicador de carregamento */
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        #loading img {
+            width: 50px;
+        }
+        /* Responsividade */
+        @media (max-width: 576px) {
+            .pokedex-container {
+                margin: 20px;
+                padding: 20px;
+            }
+            .pokemon-image {
+                width: 120px;
+                height: 120px;
+            }
+            .stat-item {
+                flex: 0 0 100%; /* Uma estatística por linha em telas pequenas */
+            }
+            .stat-name {
+                font-size: 0.85em; /* Ainda menor em telas pequenas */
+            }
+            .stat-value {
+                font-size: 0.95em;
+            }
+        }
+        /* Estilo para o texto do criador */
+        .creator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        .creator-text {
+            margin-left: 10px;
+        }
+        .creator a {
+            color: var(--text-color);
+            text-decoration: none;
+            margin-left: 5px;
+        }
+        .creator a:hover {
+            text-decoration: underline;
+        }
+        .github-icon {
+            font-size: 20px; /* Reduzido para 20px */
+            vertical-align: middle;
+        }
+        .creator img {
+            width: 60px; /* Reduzido para 60px */
+            height: 60px; /* Reduzido para 60px */
+            border-radius: 50%; /* Tornar a imagem redonda */
+            object-fit: cover; /* Ajustar a imagem dentro do contêiner */
+        }
+        /* Estilo para o botão de tema */
+        .theme-switcher {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+        }
+        .theme-switcher button {
+            background-color: transparent;
+            border: none;
+            color: var(--text-color);
+            font-size: 20px; /* Reduzido para 20px */
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .theme-switcher button:hover {
+            color: var(--secondary-color);
+        }
+        /* Estilo personalizado para as Nav Pills */
+        .nav-pills .nav-link {
+            border-radius: 50px;
+            padding: 8px 16px; /* Reduzido o padding */
+            margin-right: 8px;
+            background-color: #ccc;
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-size: 0.9em; /* Reduzido para 0.9em */
+        }
+        .nav-pills .nav-link.active {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+        .nav-pills .nav-link:hover {
+            background-color: var(--secondary-color);
+            color: #fff;
+        }
+        /* Estilos para a seção Top 10 */
+        .top10-section {
+            margin-top: 20px;
+            background-color: var(--container-background);
+            padding: 15px;
+            border-radius: 10px;
+            color: var(--container-text-color);
+            box-shadow: 0 2px 4px var(--card-shadow);
+        }
+        .top10-section h3 {
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1.2em; /* Reduzido para 1.2em */
+        }
+        .top10-section ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .top10-section li {
+            padding: 8px 12px; /* Reduzido para 8px 12px */
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            font-size: 0.95em; /* Reduzido para 0.95em */
+        }
+        .top10-section li:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Botão para alternar entre temas -->
+    <div class="theme-switcher">
+        <button id="themeToggle" aria-label="Alternar Tema">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+
+    <!-- Texto do Criador fora da div principal, sobre o fundo -->
+    <div class="creator">
+        <!-- Imagem do criador -->
+        <img src="assets/felix.jpg" alt="Foto de Luiz Henrique Felix">
+        <div class="creator-text">
+            <p>Criado por Luiz Henrique Felix
+                <a href="https://github.com/luizhfelix1" target="_blank">
+                    <i class="fab fa-github github-icon"></i>
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <div class="pokedex-container" id="pokedexContainer">
+
+        <!-- Nav Pills -->
+        <ul class="nav nav-pills mb-3" id="pokedexTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="search-tab" data-toggle="pill" href="#search" role="tab" aria-controls="search" aria-selected="true">Pokédex</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="top10-tab" data-toggle="pill" href="#top10" role="tab" aria-controls="top10" aria-selected="false">Top 10 Pokémon</a>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="pokedexTabContent">
+            <!-- Tab de Pesquisa -->
+            <div class="tab-pane fade show active" id="search" role="tabpanel" aria-labelledby="search-tab">
+                <!-- Formulário com Input Group -->
+                <form id="theForm" class="text-center">
+                    <div class="input-group mb-3">
+                        <input type="text" name="nome" id="nome" placeholder="Digite o Nome ou ID do Pokémon" class="form-control" aria-label="Nome ou ID do Pokémon">
+                        <div class="input-group-append">
+                            <button class="btn btn-search" type="submit" aria-label="Buscar">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <!-- Indicador de carregamento -->
+                <div id="loading">
+                    <img src="https://i.imgur.com/UH3IPXK.gif" alt="Carregando...">
+                </div>
+                <div class="screen mt-3">
+                    <div id="carouselIndicators" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner text-center">
+                            <div class="carousel-item active">
+                                <h4>Frente</h4>
+                                <img id="imagem" class="pokemon-image" src="" alt="Imagem Frontal">
+                            </div>
+                            <div class="carousel-item">
+                                <h4>Costas</h4>
+                                <img id="imagem2" class="pokemon-image" src="" alt="Imagem Traseira">
+                            </div>
+                            <div class="carousel-item">
+                                <h4>Brilhante</h4>
+                                <img id="imagem3" class="pokemon-image" src="" alt="Imagem Brilhante">
+                            </div>
+                        </div>
+                        <a class="carousel-control-prev" href="#carouselIndicators" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Anterior</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carouselIndicators" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Próximo</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="info">
+                    <div class="row">
+                        <!-- Coluna Esquerda: Informações Básicas -->
+                        <div class="col-md-6">
+                            <h4>Nome: <span id="name" style="color: green;"></span></h4>
+                            <h4>Peso: <span id="peso" style="color: green;"></span></h4>
+                            <h4>Tipo: <span id="tipo" style="color: green;"></span></h4>
+                            <h4>Item: <span id="held_items" style="color: green;"></span></h4>
+                            <h4>Habilidades: <span id="abilities" style="color: green;"></span></h4>
+                            <h4>Evolução: <span id="evolution-chain" style="color: green;"></span></h4>
+                        </div>
+                        <!-- Coluna Direita: Estatísticas em uma única div -->
+                        <div class="col-md-6">
+                            <div class="stats-container" id="statsCards">
+                                <!-- Estatísticas serão inseridas aqui via JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Tab dos Top 10 -->
+            <div class="tab-pane fade" id="top10" role="tabpanel" aria-labelledby="top10-tab">
+                <div class="top10-section">
+                    <h3>Top 10 Pokémon Mais Pesquisados</h3>
+                    <ul id="top10-list" class="list-group"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery e Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <!-- Bootstrap JS (versão 4) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Script personalizado -->
+    <script>
+        // Mapeamento de tipos para cores
+        const typeColors = {
+            normal: '#A8A77A',
+            fire: '#EE8130',
+            water: '#6390F0',
+            electric: '#F7D02C',
+            grass: '#7AC74C',
+            ice: '#96D9D6',
+            fighting: '#C22E28',
+            poison: '#A33EA1',
+            ground: '#E2BF65',
+            flying: '#A98FF3',
+            psychic: '#F95587',
+            bug: '#A6B91A',
+            rock: '#B6A136',
+            ghost: '#735797',
+            dragon: '#6F35FC',
+            dark: '#705746',
+            steel: '#B7B7CE',
+            fairy: '#D685AD'
+        };
+
+        // Mapeamento de estatísticas para ícones
+        const statIcons = {
+            hp: 'fas fa-heart',
+            attack: 'fas fa-fist-raised',
+            defense: 'fas fa-shield-alt',
+            'special-attack': 'fas fa-fire',
+            'special-defense': 'fas fa-lock', // Alterado para 'fas fa-lock'
+            speed: 'fas fa-tachometer-alt'
+        };
+
+        // Função para capitalizar a primeira letra
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        // Função para buscar Pokémon ao clicar na evolução
+        function searchPokemon(name) {
+            $('#nome').val(name);
+            $('#theForm').submit();
+            // Mudar para a aba Pokédex
+            $('#pokedexTab a[href="#search"]').tab('show');
+        }
+
+        // Função para alternar o tema
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+            // Trocar o ícone do botão
+            if (document.body.classList.contains('dark-theme')) {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        });
+
+        // Função para registrar a pesquisa no backend
+        function registerSearch(pokemonName) {
+            $.ajax({
+                type: 'POST',
+                url: '/api/search', // Atualizado para a função serverless
+                data: JSON.stringify({ pokemon_name: pokemonName.toLowerCase() }),
+                contentType: 'application/json',
+                success: function() {
+                    console.log('Pesquisa registrada com sucesso.');
+                    // Atualizar a lista dos top 10 após registrar a pesquisa
+                    fetchTop10();
+                },
+                error: function() {
+                    console.error('Erro ao registrar a pesquisa.');
+                }
+            });
+        }
+
+        // Função para buscar os top 10 Pokémon mais pesquisados
+        function fetchTop10() {
+            $.ajax({
+                type: 'GET',
+                url: '/api/top10', // Atualizado para a função serverless
+                success: function(data) {
+                    // Limpar a lista atual
+                    $('#top10-list').empty();
+                    // Adicionar os novos itens
+                    data.forEach(function(item, index) {
+                        let displayName = capitalizeFirstLetter(item.pokemon_name);
+                        $('#top10-list').append(
+                            `<li class="list-group-item d-flex justify-content-between align-items-center">
+                                ${index + 1}. ${displayName}
+                                <span class="badge badge-primary badge-pill">${item.count}</span>
+                            </li>`
+                        );
+                    });
+                },
+                error: function() {
+                    console.error('Erro ao obter os top 10 Pokémon.');
+                }
+            });
+        }
+
+        // Função para obter e formatar a cadeia de evolução
+        function getEvolutionChainHtml(chain) {
+            let evolutionArray = [];
+
+            function traverseEvolutionChain(node) {
+                evolutionArray.push({
+                    name: node.species.name,
+                    url: node.species.url
+                });
+                node.evolves_to.forEach(function(child) {
+                    traverseEvolutionChain(child);
+                });
+            }
+
+            traverseEvolutionChain(chain);
+
+            // Remover duplicatas
+            evolutionArray = evolutionArray.filter((v,i,a)=>a.findIndex(t=>(t.name === v.name))===i);
+
+            // Gerar HTML com nomes clicáveis
+            let evolutionHtml = evolutionArray.map(function(pokemon) {
+                let displayName = capitalizeFirstLetter(pokemon.name);
+                return `<span class="evolution-link">${displayName}</span>`;
+            }).join(' ➔ ');
+
+            return evolutionHtml;
+        }
+
+        // Função para atualizar as estatísticas em uma única div
+        function updateStatsCards(stats, typeColor) {
+            // Limpar o conteúdo anterior
+            $('#statsCards').empty();
+
+            // Criar estatísticas dentro da única div
+            stats.forEach(function(stat) {
+                let statName = capitalizeFirstLetter(stat.label.replace('-', ' '));
+                let statValue = stat.value;
+                let iconClass = statIcons[stat.label.toLowerCase()] || 'fas fa-question';
+
+                // Calcular a porcentagem para a barra de progresso (assumindo que 255 é o máximo)
+                let progressPercent = (statValue / 255) * 100; // 255 é o valor máximo nas estatísticas do Pokémon
+
+                // Criar o item de estatística com cor dinâmica para o ícone
+                let statItem = `
+                    <div class="stat-item">
+                        <i class="${iconClass} stat-icon" style="color: ${typeColor};"></i>
+                        <div class="stat-details">
+                            <div class="stat-name">${statName}</div>
+                            <div class="stat-value">${statValue}</div>
+                            <div class="progress">
+                                <div class="progress-bar bg-${getBootstrapColor(progressPercent)}" role="progressbar" style="width: ${progressPercent}%" aria-valuenow="${statValue}" aria-valuemin="0" aria-valuemax="255"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                $('#statsCards').append(statItem);
+            });
+        }
+
+        // Função para mapear porcentagem para cores do Bootstrap
+        function getBootstrapColor(percent) {
+            if (percent < 25) return 'danger';
+            if (percent < 50) return 'warning';
+            if (percent < 75) return 'info';
+            return 'success';
+        }
+
+        // Função para buscar Pokémon ao clicar no Top 10
+        $(document).on('click', '.list-group-item', function() {
+            let pokemonName = $(this).text().split('. ')[1].split(' ')[0].toLowerCase();
+            $('#nome').val(pokemonName);
+            $('#theForm').submit();
+            // Mudar para a aba Pokédex
+            $('#pokedexTab a[href="#search"]').tab('show');
+        });
+
+        // Função para buscar Pokémon ao clicar na evolução
+        $(document).on('click', '.evolution-link', function() {
+            let pokemonName = $(this).text().toLowerCase();
+            searchPokemon(pokemonName);
+        });
+
+        // Função de submissão do formulário
+        $("#theForm").submit(function(e) {
+            e.preventDefault();
+
+            var name = $('#nome').val().toLowerCase();
+            var apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + name;
+
+            // Mostrar animação de carregamento
+            $('#loading').show();
+
+            $.ajax({
+                type: 'GET',
+                url: apiUrl,
+                success: function(ret) {
+                    // Esconder animação de carregamento
+                    $('#loading').hide();
+
+                    console.log(ret);
+
+                    // Exibir informações básicas
+                    $('#name').text(capitalizeFirstLetter(ret.name));
+                    $('#imagem').attr('src', ret.sprites.front_default);
+                    $('#imagem2').attr('src', ret.sprites.back_default);
+                    $('#imagem3').attr('src', ret.sprites.front_shiny);
+                    $('#peso').text(ret.weight + " lbs");
+
+                    // Exibir tipos com tags coloridas
+                    let typesHtml = ret.types.map(function(typeInfo) {
+                        let typeName = typeInfo.type.name;
+                        let typeColor = typeColors[typeName];
+                        return `<span class="type-badge" style="background-color: ${typeColor};">${capitalizeFirstLetter(typeName)}</span>`;
+                    }).join(' ');
+                    $('#tipo').html(typesHtml);
+
+                    $('#held_items').text(ret.held_items.length > 0 ? ret.held_items.map(function(item) {
+                        return capitalizeFirstLetter(item.item.name);
+                    }).join(', ') : 'Nenhum');
+
+                    // Exibir habilidades
+                    $('#abilities').text(ret.abilities.map(function(abilityInfo) {
+                        return capitalizeFirstLetter(abilityInfo.ability.name);
+                    }).join(', '));
+
+                    // Obter a cor do tipo principal
+                    let primaryType = ret.types[0].type.name;
+                    let primaryTypeColor = typeColors[primaryType];
+
+                    // Exibir estatísticas usando a única div com cor dinâmica para os ícones
+                    var stats = ret.stats.map(function(statInfo) {
+                        return {
+                            label: statInfo.stat.name,
+                            value: statInfo.base_stat
+                        };
+                    });
+
+                    // Atualizar as estatísticas
+                    updateStatsCards(stats, primaryTypeColor);
+
+                    // Registrar a pesquisa no backend
+                    registerSearch(ret.name);
+
+                    // Mudar a cor do card principal de acordo com o primeiro tipo
+                    if(ret.types.length > 0) {
+                        let primaryColor = typeColors[primaryType];
+                        $('#pokedexContainer').css('background-color', primaryColor);
+                    }
+
+                    // Obter informações da espécie para acessar a cadeia de evolução
+                    $.ajax({
+                        type: 'GET',
+                        url: ret.species.url,
+                        success: function(speciesData) {
+                            // Obter a cadeia de evolução
+                            $.ajax({
+                                type: 'GET',
+                                url: speciesData.evolution_chain.url,
+                                success: function(evolutionData) {
+                                    // Processar e exibir a cadeia de evolução
+                                    let evolutionChainHtml = getEvolutionChainHtml(evolutionData.chain);
+                                    $('#evolution-chain').html(evolutionChainHtml);
+                                },
+                                error: function() {
+                                    console.error('Erro ao obter a cadeia de evolução.');
+                                }
+                            });
+                        },
+                        error: function() {
+                            console.error('Erro ao obter dados da espécie.');
+                        }
+                    });
+                },
+                error: function() {
+                    // Esconder animação de carregamento
+                    $('#loading').hide();
+
+                    alert('Pokémon não encontrado! Verifique o nome ou ID e tente novamente.');
+                }
+            });
+        });
+
+        // Chamar fetchTop10 ao carregar a página
+        $(document).ready(function() {
+            fetchTop10();
+        });
+    </script>
+</body>
+</html>
