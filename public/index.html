@@ -498,7 +498,7 @@
         function registerSearch(pokemonName) {
             $.ajax({
                 type: 'POST',
-                url: '/api/search', // Atualizado para a função serverless
+                url: '/api/search', // Ponto para a função serverless
                 data: JSON.stringify({ pokemon_name: pokemonName.toLowerCase() }),
                 contentType: 'application/json',
                 success: function() {
@@ -506,8 +506,8 @@
                     // Atualizar a lista dos top 10 após registrar a pesquisa
                     fetchTop10();
                 },
-                error: function() {
-                    console.error('Erro ao registrar a pesquisa.');
+                error: function(xhr, status, error) {
+                    console.error('Erro ao registrar a pesquisa:', error);
                 }
             });
         }
@@ -516,8 +516,9 @@
         function fetchTop10() {
             $.ajax({
                 type: 'GET',
-                url: '/api/top10', // Atualizado para a função serverless
+                url: '/api/top10', // Ponto para a função serverless
                 success: function(data) {
+                    console.log('Dados Top 10:', data); // Log para debug
                     // Limpar a lista atual
                     $('#top10-list').empty();
                     // Adicionar os novos itens
@@ -531,11 +532,12 @@
                         );
                     });
                 },
-                error: function() {
-                    console.error('Erro ao obter os top 10 Pokémon.');
+                error: function(xhr, status, error) {
+                    console.error('Erro ao obter os top 10 Pokémon:', error); // Log de erro
                 }
             });
         }
+
 
         // Função para obter e formatar a cadeia de evolução
         function getEvolutionChainHtml(chain) {
