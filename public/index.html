@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <title>Pokédex Modernizada</title>
+    <title>Pokéfelix</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
@@ -38,6 +38,7 @@
             --stat-color: #ffcb05; /* Cor para as barras de estatísticas */
             --stat-font-size: 0.9em; /* Tamanho reduzido das fontes */
             --stat-padding: 8px; /* Padding reduzido */
+            --badge-bg: rgba(255, 255, 255, 0.8); /* Fundo semi-transparente para badges */
         }
         body {
             background-color: var(--background-color);
@@ -59,7 +60,7 @@
             --input-text-color: #fff;
             --stat-bar-color: #ffcc00;
             --input-placeholder-color: #bbb;
-            --badge-text-color: #333;
+            --badge-bg: rgba(255, 255, 255, 0.2);
             --stat-color: #ffa500; /* Alteração de cor para o modo escuro */
         }
         .pokedex-container {
@@ -86,19 +87,83 @@
             min-height: 300px;
             box-shadow: inset 0 0 10px var(--card-shadow);
         }
+        .image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px; /* Espaçamento entre as imagens */
+            flex-wrap: wrap; /* Permite que as imagens quebrem para uma nova linha em telas pequenas */
+        }
+        .image-card {
+            position: relative;
+            text-align: center;
+        }
         .pokemon-image {
             width: 150px;
             height: 150px;
             object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px var(--card-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .info {
+        .shiny-image {
+            border: 2px solid #FFD700; /* Bordas douradas para a imagem shiny */
+        }
+        .pokemon-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px var(--hover-shadow);
+        }
+        .image-label {
+            margin-top: 8px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+        /* Tags para Número e Tipos abaixo das imagens */
+        .pokemon-info {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px; /* Espaçamento entre Número e Tipos */
+        }
+        .pokemon-number-tag {
+            background-color: var(--badge-bg);
+            color: #333;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        .pokemon-types-tag {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .type-badge-tag {
+            background-color: var(--badge-bg);
+            color: #333;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 0.8em;
+            text-transform: capitalize;
+        }
+        .info-card {
             margin-top: 20px;
             background-color: var(--container-background);
             padding: 15px;
             border-radius: 10px;
             color: var(--container-text-color);
+            box-shadow: 0 2px 4px var(--card-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Adicionado para hover */
         }
-        .info h4 {
+        /* Efeito de hover para info-card */
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px var(--hover-shadow);
+        }
+        .info-card h4 {
             margin-bottom: 10px;
             font-weight: 600;
             font-size: 1em; /* Reduzido para 1em */
@@ -126,18 +191,12 @@
         .input-group {
             max-width: 100%;
         }
-        .carousel-control-prev-icon,
-        .carousel-control-next-icon {
-            background-color: #333;
-            border-radius: 50%;
-            padding: 10px;
-        }
         /* Estilos para as badges de tipos */
         .type-badge {
             display: inline-block;
             padding: 5px 10px;
             border-radius: 12px;
-            color: var(--badge-text-color);
+            color: white; /* Definido como branco */
             font-weight: bold;
             margin-right: 5px;
             text-transform: capitalize;
@@ -234,6 +293,17 @@
             .stat-value {
                 font-size: 0.95em;
             }
+            .image-container {
+                flex-direction: column; /* Alinha as imagens verticalmente em telas pequenas */
+                gap: 10px;
+            }
+            .pokemon-info {
+                flex-direction: column; /* Em mobile, as tags são empilhadas verticalmente */
+                align-items: center;
+            }
+            .popular-pokemons {
+                display: none; /* Esconder as tags no modo mobile, pois serão geradas dinamicamente */
+            }
         }
         /* Estilo para o texto do criador */
         .creator {
@@ -323,9 +393,39 @@
             border-radius: 8px;
             transition: background-color 0.3s ease;
             font-size: 0.95em; /* Reduzido para 0.95em */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         .top10-section li:hover {
             background-color: rgba(0,0,0,0.05);
+        }
+        /* Ajuste das badges no modo Dark */
+        .dark-theme .top10-section .badge-primary {
+            background-color: #ffc107; /* Cor de aviso do Bootstrap */
+            color: #fff; /* Texto branco para contraste */
+        }
+        /* Estilos para as tags de Pokémons populares */
+        .popular-pokemons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px; /* Espaçamento entre as tags */
+            margin-bottom: 20px; /* Espaço abaixo das tags */
+        }
+        .pokemon-tag {
+            background-color: var(--button-background);
+            color: var(--button-text-color);
+            padding: 5px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-size: 0.9em;
+            text-transform: capitalize;
+        }
+        .pokemon-tag:hover {
+            background-color: #e6b800; /* Cor ao passar o mouse */
+            color: #fff;
         }
     </style>
 </head>
@@ -361,6 +461,11 @@
             </li>
         </ul>
 
+        <!-- Tag de Pokémons Populares (Será gerado dinamicamente) -->
+        <div class="popular-pokemons" id="suggestion-pokemons">
+            <!-- As tags serão inseridas aqui via JavaScript -->
+        </div>
+
         <!-- Tab Content -->
         <div class="tab-content" id="pokedexTabContent">
             <!-- Tab de Pesquisa -->
@@ -381,48 +486,46 @@
                     <img src="https://i.imgur.com/UH3IPXK.gif" alt="Carregando...">
                 </div>
                 <div class="screen mt-3">
-                    <div id="carouselIndicators" class="carousel slide" data-ride="carousel">
-                        <div class="carousel-inner text-center">
-                            <div class="carousel-item active">
-                                <h4>Frente</h4>
-                                <img id="imagem" class="pokemon-image" src="" alt="Imagem Frontal">
-                            </div>
-                            <div class="carousel-item">
-                                <h4>Costas</h4>
-                                <img id="imagem2" class="pokemon-image" src="" alt="Imagem Traseira">
-                            </div>
-                            <div class="carousel-item">
-                                <h4>Brilhante</h4>
-                                <img id="imagem3" class="pokemon-image" src="" alt="Imagem Brilhante">
-                            </div>
+                    <!-- Contêiner de Imagens -->
+                    <div class="image-container">
+                        <div class="image-card">
+                            <img id="mainImage" class="pokemon-image" src="" alt="Imagem Principal">
+                            <p class="image-label">Normal</p>
                         </div>
-                        <a class="carousel-control-prev" href="#carouselIndicators" role="button" data-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Anterior</span>
-                        </a>
-                        <a class="carousel-control-next" href="#carouselIndicators" role="button" data-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Próximo</span>
-                        </a>
+                        <div class="image-card">
+                            <img id="shinyImage" class="pokemon-image shiny-image" src="" alt="Imagem Shiny">
+                            <p class="image-label">Shiny</p>
+                        </div>
+                    </div>
+                    <!-- Tags de Número e Tipos abaixo das imagens -->
+                    <div class="pokemon-info">
+                        <div class="pokemon-number-tag" id="numero-tag">#001</div>
+                        <div class="pokemon-types-tag" id="tipo-tag">
+                            <!-- Tipos serão inseridos aqui via JavaScript -->
+                        </div>
                     </div>
                 </div>
-                <div class="info">
+                <!-- Card Único para Informações Detalhadas (sem Número e Tipo) -->
+                <div class="info-card">
                     <div class="row">
-                        <!-- Coluna Esquerda: Informações Básicas -->
                         <div class="col-md-6">
+                            <!-- Número removido -->
                             <h4>Nome: <span id="name" style="color: green;"></span></h4>
                             <h4>Peso: <span id="peso" style="color: green;"></span></h4>
-                            <h4>Tipo: <span id="tipo" style="color: green;"></span></h4>
+                            <h4>Região: <span id="regiao" style="color: green;"></span></h4>
+                        </div>
+                        <div class="col-md-6">
+                            <!-- Tipo removido -->
                             <h4>Item: <span id="held_items" style="color: green;"></span></h4>
                             <h4>Habilidades: <span id="abilities" style="color: green;"></span></h4>
                             <h4>Evolução: <span id="evolution-chain" style="color: green;"></span></h4>
                         </div>
-                        <!-- Coluna Direita: Estatísticas em uma única div -->
-                        <div class="col-md-6">
-                            <div class="stats-container" id="statsCards">
-                                <!-- Estatísticas serão inseridas aqui via JavaScript -->
-                            </div>
-                        </div>
+                    </div>
+                </div>
+                <!-- Card para Estatísticas -->
+                <div class="info-card">
+                    <div class="stats-container" id="statsCards">
+                        <!-- Estatísticas serão inseridas aqui via JavaScript -->
                     </div>
                 </div>
             </div>
@@ -430,7 +533,9 @@
             <div class="tab-pane fade" id="top10" role="tabpanel" aria-labelledby="top10-tab">
                 <div class="top10-section">
                     <h3>Top 10 Pokémon Mais Pesquisados</h3>
-                    <ul id="top10-list" class="list-group"></ul>
+                    <ul id="top10-list" class="list-group">
+                        <!-- Itens serão inseridos aqui via JavaScript -->
+                    </ul>
                 </div>
             </div>
         </div>
@@ -470,16 +575,54 @@
             attack: 'fas fa-fist-raised',
             defense: 'fas fa-shield-alt',
             'special-attack': 'fas fa-fire',
-            'special-defense': 'fas fa-lock', // Alterado para 'fas fa-lock'
+            'special-defense': 'fas fa-lock',
             speed: 'fas fa-tachometer-alt'
         };
+
+        // Mapeamento de gerações para regiões
+        const generationRegions = {
+            'generation-i': 'Kanto',
+            'generation-ii': 'Johto',
+            'generation-iii': 'Hoenn',
+            'generation-iv': 'Sinnoh',
+            'generation-v': 'Unova',
+            'generation-vi': 'Kalos',
+            'generation-vii': 'Alola',
+            'generation-viii': 'Galar',
+            'generation-ix': 'Paldea'
+        };
+
+        // Lista de Pokémons para sugestões
+        const allSuggestionPokemons = [
+            'Pikachu',
+            'Bulbasaur',
+            'Charmander',
+            'Squirtle',
+            'Eevee',
+            'Snorlax',
+            'Mewtwo',
+            'Gengar',
+            'Lucario',
+            'Dragonite',
+            'Mew',
+            'Arcanine',
+            'Lapras',
+            'Jigglypuff',
+            'Vaporeon',
+            'Flareon',
+            'Espeon',
+            'Umbreon',
+            'Leafeon',
+            'Glaceon'
+            // Adicione mais Pokémons conforme desejado
+        ];
 
         // Função para capitalizar a primeira letra
         function capitalizeFirstLetter(string) {
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
 
-        // Função para buscar Pokémon ao clicar na evolução
+        // Função para buscar Pokémon ao clicar na evolução ou nas tags
         function searchPokemon(name) {
             $('#nome').val(name);
             $('#theForm').submit();
@@ -553,7 +696,6 @@
             });
         }
 
-
         // Função para obter e formatar a cadeia de evolução
         function getEvolutionChainHtml(chain) {
             let evolutionArray = [];
@@ -593,6 +735,14 @@
                 let statValue = stat.value;
                 let iconClass = statIcons[stat.label.toLowerCase()] || 'fas fa-question';
 
+                // Conversão de Peso: remover trailing .00
+                if(stat.label.toLowerCase() === 'weight'){
+                    // Supondo que stat.value está em decagramas
+                    let weightKg = parseFloat((stat.value * 0.1).toFixed(2));
+                    statValue = weightKg;
+                    statName = 'Peso';
+                }
+
                 // Calcular a porcentagem para a barra de progresso (assumindo que 255 é o máximo)
                 let progressPercent = (statValue / 255) * 100; // 255 é o valor máximo nas estatísticas do Pokémon
 
@@ -621,6 +771,30 @@
             return 'success';
         }
 
+        // Função para gerar sugestões de Pokémons dinâmicas
+        function generateSuggestionPokemons() {
+            const suggestionContainer = $('#suggestion-pokemons');
+            suggestionContainer.empty(); // Limpar sugestões anteriores
+
+            // Determinar o número de sugestões com base no tamanho da tela
+            let numberOfSuggestions = 8; // Padrão para desktop
+            if (window.innerWidth <= 576) { // Modo mobile
+                numberOfSuggestions = 3;
+            }
+
+            // Shuffle da lista de Pokémons para randomizar as sugestões
+            const shuffledPokemons = allSuggestionPokemons.sort(() => 0.5 - Math.random());
+
+            // Selecionar o número necessário de sugestões
+            const selectedPokemons = shuffledPokemons.slice(0, numberOfSuggestions);
+
+            // Criar as tags de sugestão
+            selectedPokemons.forEach(function(pokemon) {
+                let tag = `<span class="pokemon-tag">${capitalizeFirstLetter(pokemon)}</span>`;
+                suggestionContainer.append(tag);
+            });
+        }
+
         // Função para buscar Pokémon ao clicar no Top 10
         $(document).on('click', '.list-group-item', function() {
             let pokemonName = $(this).text().split('. ')[1].split(' ')[0].toLowerCase();
@@ -630,8 +804,8 @@
             $('#pokedexTab a[href="#search"]').tab('show');
         });
 
-        // Função para buscar Pokémon ao clicar na evolução
-        $(document).on('click', '.evolution-link', function() {
+        // Função para buscar Pokémon ao clicar nas evoluções ou nas tags
+        $(document).on('click', '.evolution-link, .pokemon-tag', function() {
             let pokemonName = $(this).text().toLowerCase();
             searchPokemon(pokemonName);
         });
@@ -655,12 +829,36 @@
 
                     console.log(ret);
 
-                    // Exibir informações básicas
+                    // Atualizar a tag de número
+                    $('#numero-tag').text('#' + ret.id);
+                    // Para depuração: Verifique se o número está sendo atualizado corretamente
+                    console.log('Número do Pokémon atualizado para:', '#' + ret.id);
+
+                    // Atualizar a tag de nome
                     $('#name').text(capitalizeFirstLetter(ret.name));
-                    $('#imagem').attr('src', ret.sprites.front_default);
-                    $('#imagem2').attr('src', ret.sprites.back_default);
-                    $('#imagem3').attr('src', ret.sprites.front_shiny);
-                    $('#peso').text(ret.weight + " lbs");
+
+                    // Atualizar as imagens principal e shiny
+                    $('#mainImage').attr('src', ret.sprites.front_default || 'assets/no-image.png');
+                    $('#shinyImage').attr('src', ret.sprites.front_shiny || 'assets/no-image.png');
+
+                    // Exibir labels de imagem caso as imagens não existam
+                    if (!ret.sprites.front_default) {
+                        $('#mainImage').attr('alt', 'Imagem Principal Não Disponível');
+                        $('.image-card:first-child .image-label').text('Normal (Indisponível)');
+                    } else {
+                        $('.image-card:first-child .image-label').text('Normal');
+                    }
+
+                    if (!ret.sprites.front_shiny) {
+                        $('#shinyImage').attr('alt', 'Imagem Shiny Não Disponível');
+                        $('.image-card:last-child .image-label').text('Shiny (Indisponível)');
+                    } else {
+                        $('.image-card:last-child .image-label').text('Shiny');
+                    }
+
+                    // Conversão de Peso: decagramas para quilos e remoção de .00
+                    var weightKg = parseFloat((ret.weight * 0.1).toFixed(2));
+                    $('#peso').text(weightKg + " kg");
 
                     // Exibir tipos com tags coloridas
                     let typesHtml = ret.types.map(function(typeInfo) {
@@ -669,6 +867,14 @@
                         return `<span class="type-badge" style="background-color: ${typeColor};">${capitalizeFirstLetter(typeName)}</span>`;
                     }).join(' ');
                     $('#tipo').html(typesHtml);
+
+                    // Atualizar os tipos nas tags abaixo das imagens
+                    let typesTagHtml = ret.types.map(function(typeInfo) {
+                        let typeName = typeInfo.type.name;
+                        let typeColor = typeColors[typeName];
+                        return `<span class="type-badge-tag" style="background-color: ${typeColor};">${capitalizeFirstLetter(typeName)}</span>`;
+                    }).join(' ');
+                    $('#tipo-tag').html(typesTagHtml);
 
                     $('#held_items').text(ret.held_items.length > 0 ? ret.held_items.map(function(item) {
                         return capitalizeFirstLetter(item.item.name);
@@ -703,7 +909,7 @@
                         $('#pokedexContainer').css('background-color', primaryColor);
                     }
 
-                    // Obter informações da espécie para acessar a cadeia de evolução
+                    // Obter informações da espécie para acessar a cadeia de evolução e região
                     $.ajax({
                         type: 'GET',
                         url: ret.species.url,
@@ -721,24 +927,51 @@
                                     console.error('Erro ao obter a cadeia de evolução.');
                                 }
                             });
+
+                            // Obter a geração para determinar a região
+                            $.ajax({
+                                type: 'GET',
+                                url: speciesData.generation.url,
+                                success: function(generationData) {
+                                    let generationName = generationData.name;
+                                    let regionName = generationRegions[generationName] || 'Desconhecida';
+                                    $('#regiao').text(regionName);
+                                },
+                                error: function() {
+                                    console.error('Erro ao obter dados da geração.');
+                                    $('#regiao').text('Desconhecida');
+                                }
+                            });
                         },
                         error: function() {
-                            console.error('Erro ao obter dados da espécie.');
+                            console.error('Erro ao obter dados da espécie para a região.');
+                            $('#regiao').text('Desconhecida');
                         }
                     });
                 },
-                error: function() {
+                error: function(xhr, status, error) {
                     // Esconder animação de carregamento
                     $('#loading').hide();
 
                     alert('Pokémon não encontrado! Verifique o nome ou ID e tente novamente.');
+                    console.error('Erro ao buscar o Pokémon:', error);
                 }
             });
         });
 
-        // Chamar fetchTop10 ao carregar a página
+        // Função para buscar e exibir o Pokémon Mew ao carregar a página
         $(document).ready(function() {
+            // Preselecionar Mew ao carregar a página
+            searchPokemon('mew');
+            // Gerar sugestões de Pokémons
+            generateSuggestionPokemons();
+            // Buscar os Top 10 Pokémon
             fetchTop10();
+        });
+
+        // Regerar sugestões quando a janela é redimensionada
+        $(window).resize(function() {
+            generateSuggestionPokemons();
         });
     </script>
 </body>
